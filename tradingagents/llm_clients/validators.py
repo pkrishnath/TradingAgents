@@ -63,6 +63,27 @@ VALID_MODELS = {
         "grok-4-fast-reasoning",
         "grok-4-fast-non-reasoning",
     ],
+    "zhipuai": [
+        # GLM-5 series
+        "glm-5",
+        # GLM-4.7 series
+        "glm-4.7",
+        "glm-4.7-flash",
+        # GLM-4.6 series
+        "glm-4.6",
+        "glm-4.6v",
+        # GLM-4.5 series
+        "glm-4.5",
+        "glm-4.5v",
+        "glm-4.5-air",
+        # GLM-4 series
+        "glm-4-plus",
+        "glm-4-long",
+        "glm-4-air",
+        "glm-4-airx",
+        "glm-4-flash",
+        "glm-4-flashx",
+    ],
 }
 
 
