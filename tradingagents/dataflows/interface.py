@@ -23,6 +23,11 @@ from .alpha_vantage import (
     get_global_news as get_alpha_vantage_global_news,
 )
 from .alpha_vantage_common import AlphaVantageRateLimitError
+from .tradingview import (
+    get_stock_data as get_tradingview_stock,
+    get_indicators as get_tradingview_indicators,
+    TradingViewDataNotAvailableError,
+)
 
 # Configuration and routing logic
 from .config import get_config
@@ -63,6 +68,7 @@ TOOLS_CATEGORIES = {
 VENDOR_LIST = [
     "yfinance",
     "alpha_vantage",
+    "tradingview",
 ]
 
 # Mapping of methods to their vendor-specific implementations
@@ -71,11 +77,13 @@ VENDOR_METHODS = {
     "get_stock_data": {
         "alpha_vantage": get_alpha_vantage_stock,
         "yfinance": get_YFin_data_online,
+        "tradingview": get_tradingview_stock,
     },
     # technical_indicators
     "get_indicators": {
         "alpha_vantage": get_alpha_vantage_indicator,
         "yfinance": get_stock_stats_indicators_window,
+        "tradingview": get_tradingview_indicators,
     },
     # fundamental_data
     "get_fundamentals": {
@@ -156,7 +164,7 @@ def route_to_vendor(method: str, *args, **kwargs):
 
         try:
             return impl_func(*args, **kwargs)
-        except AlphaVantageRateLimitError:
-            continue  # Only rate limits trigger fallback
+        except (AlphaVantageRateLimitError, TradingViewDataNotAvailableError):
+            continue  # Rate limits and missing TradingView data trigger fallback
 
     raise RuntimeError(f"No available vendor for '{method}'")
