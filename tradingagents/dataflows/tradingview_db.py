@@ -10,7 +10,11 @@ from .config import get_config
 
 
 def _get_db_path() -> str:
-    """Resolve the SQLite database path from config."""
+    """Resolve the SQLite database path from config or environment."""
+    # Environment variable takes priority (for Docker)
+    env_path = os.environ.get("TRADINGVIEW_DB_PATH")
+    if env_path:
+        return env_path
     config = get_config()
     db_path = config.get("tradingview_db_path")
     if db_path:

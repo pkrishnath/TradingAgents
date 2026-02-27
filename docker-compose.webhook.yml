@@ -1,0 +1,42 @@
+services:
+  # TradingView Webhook Receiver (FastAPI + SQLite)
+  webhook:
+    build:
+      context: .
+      dockerfile: Dockerfile.webhook
+    ports:
+      - "8089:8089"
+    volumes:
+      - webhook_data:/app/data
+    environment:
+      - TRADINGVIEW_WEBHOOK_PORT=8089
+      # Point SQLite DB to the mounted volume
+      - TRADINGVIEW_DB_PATH=/app/data/tradingview_market_data.db
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  # Cloudflare Tunnel — exposes webhook to the internet for TradingView alerts
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --url http://webhook:8089
+    depends_on:
+      - webhook
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.1'
+          memory: 64M
+
+volumes:
+  webhook_data:

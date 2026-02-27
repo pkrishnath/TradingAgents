@@ -1,0 +1,20 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install only the deps needed for the webhook server
+RUN pip install --no-cache-dir \
+    fastapi>=0.115.0 \
+    uvicorn>=0.34.0 \
+    pandas>=2.3.0 \
+    stockstats>=0.6.5 \
+    python-dateutil>=2.9.0
+
+# Copy just the package (not the whole repo)
+COPY tradingagents/ ./tradingagents/
+
+# SQLite database lives in /data (mount as volume for persistence)
+ENV TRADINGVIEW_WEBHOOK_PORT=8089
+EXPOSE 8089
+
+CMD ["python", "-m", "tradingagents.dataflows.tradingview_webhook"]
